@@ -14,10 +14,6 @@ export const Dashboard = ({ groups }) => {
   );
 };
 
-function mapStateToProps(state) {
-  return {
-    groups: state.groups,
-  };
-}
+const mapStateToProps = ({ groups }) => ({ groups });
 
 export const ConnectedDashboard = connect(mapStateToProps)(Dashboard);
