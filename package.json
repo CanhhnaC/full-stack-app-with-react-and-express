@@ -48,7 +48,6 @@
     "initialize": "babel-node src/server/initialize-db",
     "server": "nodemon --exec babel-node src/server/server",
     "server-test": "babel-node src/server/server.spec",
-    "start-dev": "run-p server dev ",
-    "build": "webpack -p"
+    "start-dev": "run-p server dev "
   }
 }

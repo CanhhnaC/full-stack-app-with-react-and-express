@@ -1,11 +1,11 @@
 import { take, put, select } from 'redux-saga/effects';
 import uuid from 'uuid';
 import axios from 'axios';
+
 import { history } from './history';
-
 import * as mutations from './mutations';
-
-const url = process.env.NODE_ENV == 'production' ? `` : 'http://localhost:7777';
+const url =
+  process.env.NODE_ENV === 'production' ? `` : `http://localhost:7777`;
 
 export function* taskCreationSaga() {
   while (true) {
@@ -13,17 +13,23 @@ export function* taskCreationSaga() {
     const ownerID = yield select((state) => state.session.id);
     const taskID = uuid();
     let mutation = mutations.createTask(taskID, groupID, ownerID);
-
-    const { res } = yield axios.post(url + '/task/new', {
+    const { res } = yield axios.post(url + `/task/new`, {
       task: {
         id: taskID,
         group: groupID,
         owner: ownerID,
         isComplete: false,
-        name: 'New Task',
+        name: 'New task',
       },
     });
     yield put(mutation);
+  }
+}
+
+export function* commentCreationSaga() {
+  while (true) {
+    const comment = yield take(mutations.ADD_TASK_COMMENT);
+    axios.post(url + `/comment/new`, { comment });
   }
 }
 
@@ -34,7 +40,6 @@ export function* taskModificationSaga() {
       mutations.SET_TASK_NAME,
       mutations.SET_TASK_COMPLETE,
     ]);
-
     axios.post(url + `/task/update`, {
       task: {
         id: task.taskID,
@@ -52,15 +57,10 @@ export function* userAuthenticationSaga() {
       mutations.REQUEST_AUTHENTICATE_USER
     );
     try {
-      const { data } = yield axios.post(url + '/authenticate', {
+      const { data } = yield axios.post(url + `/authenticate`, {
         username,
         password,
       });
-      if (!data) {
-        throw new Error();
-      }
-      console.log('authenticated', data.state);
-
       yield put(mutations.setState(data.state));
       yield put(
         mutations.processAuthenticateUser(mutations.AUTHENTICATED, {
@@ -70,7 +70,7 @@ export function* userAuthenticationSaga() {
       );
       history.push(`/dashboard`);
     } catch (e) {
-      console.log("can't auth");
+      /* catch block handles failed login */
       yield put(mutations.processAuthenticateUser(mutations.NOT_AUTHENTICATED));
     }
   }
